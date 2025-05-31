@@ -15,6 +15,7 @@ import Profile from "./pages/Profile";
 import UserDirectory from "./pages/UserDirectory";
 import UserManagement from "./pages/UserManagement";
 import NotFound from "./pages/NotFound";
+import { TicketList, CreateTicket, TicketDetail } from "./pages/tickets";
 
 const queryClient = new QueryClient();
 

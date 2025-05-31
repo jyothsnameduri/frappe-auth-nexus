@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,64 +5,90 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { 
+  User, 
+  Mail, 
+  Phone, 
+  Building, 
+  Calendar, 
+  Settings, 
+  Bell, 
+  Shield, 
+  Camera,
+  Edit,
+  Save,
+  X
+} from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Camera, Edit2, Save, X } from 'lucide-react';
 
 const Profile = () => {
-  const { user, updateProfile } = useAuth();
+  const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    name: user?.name || '',
-    email: user?.email || '',
-    phone: user?.phone || '',
-    department: user?.department || 'IT'
+  const [profileData, setProfileData] = useState({
+    name: user?.name || 'John Doe',
+    email: user?.email || 'john.doe@company.com',
+    phone: '+1 (555) 123-4567',
+    department: user?.department || 'IT' as 'IT' | 'HR' | 'Admin' | 'General',
+    role: user?.role || 'Employee',
+    joinDate: '2023-01-15',
+    location: 'New York, NY',
+    bio: 'Experienced software developer with expertise in React and TypeScript.',
   });
 
-  const handleSave = async () => {
-    try {
-      await updateProfile({
-        ...formData,
-        department: formData.department as 'IT' | 'HR' | 'Admin' | 'General'
-      });
-      setIsEditing(false);
-    } catch (error) {
-      console.error('Failed to update profile:', error);
-    }
-  };
+  const [notifications, setNotifications] = useState({
+    emailUpdates: true,
+    pushNotifications: false,
+    weeklyDigest: true,
+    ticketAssignments: true,
+    statusChanges: false,
+  });
 
-  const handleCancel = () => {
-    setFormData({
-      name: user?.name || '',
-      email: user?.email || '',
-      phone: user?.phone || '',
-      department: user?.department || 'IT'
-    });
+  const recentActivity = [
+    { action: 'Updated ticket HD-001', time: '2 hours ago', type: 'ticket' },
+    { action: 'Created new ticket HD-005', time: '1 day ago', type: 'ticket' },
+    { action: 'Updated profile information', time: '3 days ago', type: 'profile' },
+    { action: 'Resolved ticket HD-003', time: '1 week ago', type: 'ticket' },
+  ];
+
+  const handleSave = () => {
+    // In real app, this would make an API call
     setIsEditing(false);
   };
 
-  const getRoleBadgeColor = (role: string) => {
-    switch (role) {
-      case 'Admin': return 'bg-red-100 text-red-800';
-      case 'Agent': return 'bg-blue-100 text-blue-800';
-      case 'Employee': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+  const handleCancel = () => {
+    // Reset to original values
+    setIsEditing(false);
   };
 
-  const getDepartmentBadgeColor = (department: string) => {
-    switch (department) {
-      case 'IT': return 'bg-purple-100 text-purple-800';
-      case 'HR': return 'bg-orange-100 text-orange-800';
-      case 'Admin': return 'bg-red-100 text-red-800';
-      case 'General': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+  const handleNotificationChange = (key: keyof typeof notifications) => {
+    setNotifications(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
   };
 
-  if (!user) {
-    return <div>Loading...</div>;
-  }
+  const getDepartmentColor = (dept: string) => {
+    const colors = {
+      IT: 'bg-blue-100 text-blue-800',
+      HR: 'bg-green-100 text-green-800',
+      Admin: 'bg-purple-100 text-purple-800',
+      General: 'bg-gray-100 text-gray-800'
+    };
+    return colors[dept as keyof typeof colors] || colors.General;
+  };
+
+  const getRoleColor = (role: string) => {
+    const colors = {
+      Employee: 'bg-green-100 text-green-800',
+      Agent: 'bg-blue-100 text-blue-800',
+      Admin: 'bg-red-100 text-red-800'
+    };
+    return colors[role as keyof typeof colors] || colors.Employee;
+  };
 
   return (
     <div className="space-y-6">
@@ -71,16 +96,16 @@ const Profile = () => {
         <h1 className="text-3xl font-bold text-frappe-dark">Profile</h1>
         {!isEditing ? (
           <Button onClick={() => setIsEditing(true)} className="bg-frappe-primary hover:bg-frappe-primary/90">
-            <Edit2 className="h-4 w-4 mr-2" />
+            <Edit className="h-4 w-4 mr-2" />
             Edit Profile
           </Button>
         ) : (
           <div className="space-x-2">
-            <Button onClick={handleSave} className="bg-frappe-success hover:bg-frappe-success/90">
+            <Button onClick={handleSave} className="bg-frappe-primary hover:bg-frappe-primary/90">
               <Save className="h-4 w-4 mr-2" />
               Save
             </Button>
-            <Button variant="outline" onClick={handleCancel}>
+            <Button onClick={handleCancel} variant="outline">
               <X className="h-4 w-4 mr-2" />
               Cancel
             </Button>
@@ -88,86 +113,118 @@ const Profile = () => {
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Profile Card */}
-        <Card className="lg:col-span-1">
-          <CardHeader className="text-center">
-            <div className="relative mx-auto">
-              <Avatar className="w-24 h-24 mx-auto">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="text-xl">
-                  {user.name.split(' ').map(n => n[0]).join('')}
-                </AvatarFallback>
-              </Avatar>
-              {isEditing && (
-                <button className="absolute bottom-0 right-0 p-2 bg-frappe-primary rounded-full text-white hover:bg-frappe-primary/90">
-                  <Camera className="h-4 w-4" />
-                </button>
-              )}
-            </div>
-            <CardTitle className="text-xl text-frappe-dark">{user.name}</CardTitle>
-            <div className="space-y-2">
-              <Badge className={getRoleBadgeColor(user.role)}>
-                {user.role}
-              </Badge>
-              <Badge className={getDepartmentBadgeColor(user.department)}>
-                {user.department}
-              </Badge>
-            </div>
-          </CardHeader>
-        </Card>
+      <Tabs defaultValue="profile" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="profile">Profile</TabsTrigger>
+          <TabsTrigger value="activity">Activity</TabsTrigger>
+          <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          <TabsTrigger value="security">Security</TabsTrigger>
+        </TabsList>
 
-        {/* Profile Information */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Personal Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                {isEditing ? (
+        <TabsContent value="profile" className="space-y-6">
+          {/* Profile Header */}
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-6">
+                <div className="relative">
+                  <Avatar className="h-24 w-24">
+                    <AvatarImage src="/placeholder.svg" />
+                    <AvatarFallback className="text-xl">
+                      {profileData.name.split(' ').map(n => n[0]).join('')}
+                    </AvatarFallback>
+                  </Avatar>
+                  {isEditing && (
+                    <Button
+                      size="sm"
+                      className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full p-0"
+                    >
+                      <Camera className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <h2 className="text-2xl font-bold text-frappe-dark">{profileData.name}</h2>
+                  <p className="text-gray-600">{profileData.email}</p>
+                  <div className="flex items-center space-x-3 mt-2">
+                    <Badge className={getDepartmentColor(profileData.department)}>
+                      {profileData.department}
+                    </Badge>
+                    <Badge className={getRoleColor(profileData.role)}>
+                      {profileData.role}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Profile Information */}
+          <div className="grid md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <User className="h-5 w-5 mr-2" />
+                  Personal Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Full Name</Label>
                   <Input
                     id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    value={profileData.name}
+                    onChange={(e) => setProfileData(prev => ({ ...prev, name: e.target.value }))}
+                    disabled={!isEditing}
                   />
-                ) : (
-                  <div className="p-2 bg-gray-50 rounded-md">{user.name}</div>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                {isEditing ? (
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
                     type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    value={profileData.email}
+                    onChange={(e) => setProfileData(prev => ({ ...prev, email: e.target.value }))}
+                    disabled={!isEditing}
                   />
-                ) : (
-                  <div className="p-2 bg-gray-50 rounded-md">{user.email}</div>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone</Label>
-                {isEditing ? (
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone</Label>
                   <Input
                     id="phone"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    value={profileData.phone}
+                    onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
+                    disabled={!isEditing}
                   />
-                ) : (
-                  <div className="p-2 bg-gray-50 rounded-md">{user.phone || 'Not provided'}</div>
-                )}
-              </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="bio">Bio</Label>
+                  <Input
+                    id="bio"
+                    value={profileData.bio}
+                    onChange={(e) => setProfileData(prev => ({ ...prev, bio: e.target.value }))}
+                    disabled={!isEditing}
+                  />
+                </div>
+              </CardContent>
+            </Card>
 
-              <div className="space-y-2">
-                <Label htmlFor="department">Department</Label>
-                {isEditing ? (
-                  <Select value={formData.department} onValueChange={(value) => setFormData({...formData, department: value})}>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Building className="h-5 w-5 mr-2" />
+                  Work Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="department">Department</Label>
+                  <Select
+                    value={profileData.department}
+                    onValueChange={(value: 'IT' | 'HR' | 'Admin' | 'General') => 
+                      setProfileData(prev => ({ ...prev, department: value }))
+                    }
+                    disabled={!isEditing}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -178,59 +235,105 @@ const Profile = () => {
                       <SelectItem value="General">General</SelectItem>
                     </SelectContent>
                   </Select>
-                ) : (
-                  <div className="p-2 bg-gray-50 rounded-md">{user.department}</div>
-                )}
-              </div>
-            </div>
-
-            <div className="pt-4 border-t">
-              <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
-                <div>
-                  <span className="font-medium">Member Since:</span><br />
-                  {user.createdAt.toLocaleDateString()}
                 </div>
-                <div>
-                  <span className="font-medium">Last Active:</span><br />
-                  {user.lastActive.toLocaleDateString()}
+                <div className="space-y-2">
+                  <Label htmlFor="role">Role</Label>
+                  <Input
+                    id="role"
+                    value={profileData.role}
+                    disabled
+                    className="bg-gray-50"
+                  />
                 </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Activity Timeline */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Activity</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-              <div className="w-2 h-2 bg-frappe-success rounded-full"></div>
-              <div className="flex-1">
-                <p className="text-sm">Profile updated successfully</p>
-                <p className="text-xs text-gray-500">2 hours ago</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-              <div className="w-2 h-2 bg-frappe-primary rounded-full"></div>
-              <div className="flex-1">
-                <p className="text-sm">Logged in from new device</p>
-                <p className="text-xs text-gray-500">1 day ago</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-              <div className="w-2 h-2 bg-frappe-info rounded-full"></div>
-              <div className="flex-1">
-                <p className="text-sm">Password changed</p>
-                <p className="text-xs text-gray-500">3 days ago</p>
-              </div>
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="joinDate">Join Date</Label>
+                  <Input
+                    id="joinDate"
+                    value={profileData.joinDate}
+                    disabled
+                    className="bg-gray-50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="location">Location</Label>
+                  <Input
+                    id="location"
+                    value={profileData.location}
+                    onChange={(e) => setProfileData(prev => ({ ...prev, location: e.target.value }))}
+                    disabled={!isEditing}
+                  />
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        </CardContent>
-      </Card>
+        </TabsContent>
+
+        <TabsContent value="activity">
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Activity</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {recentActivity.map((activity, index) => (
+                  <div key={index} className="flex items-center space-x-3 p-3 rounded-lg bg-gray-50">
+                    <div className="flex-1">
+                      <p className="font-medium">{activity.action}</p>
+                      <p className="text-sm text-gray-500">{activity.time}</p>
+                    </div>
+                    <Badge variant="outline">
+                      {activity.type}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="notifications">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Bell className="h-5 w-5 mr-2" />
+                Notification Preferences
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {Object.entries(notifications).map(([key, value]) => (
+                <div key={key} className="flex items-center justify-between">
+                  <Label htmlFor={key} className="capitalize">
+                    {key.replace(/([A-Z])/g, ' $1').toLowerCase()}
+                  </Label>
+                  <Switch
+                    id={key}
+                    checked={value}
+                    onCheckedChange={() => handleNotificationChange(key as keyof typeof notifications)}
+                  />
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="security">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Shield className="h-5 w-5 mr-2" />
+                Security Settings
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Button className="w-full">Change Password</Button>
+              <Separator />
+              <Button variant="outline" className="w-full">Enable Two-Factor Authentication</Button>
+              <Separator />
+              <Button variant="outline" className="w-full">Download Account Data</Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
