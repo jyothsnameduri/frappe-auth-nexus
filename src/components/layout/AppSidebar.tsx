@@ -42,10 +42,11 @@ const adminItems = [
 ];
 
 export function AppSidebar() {
-  const { collapsed } = useSidebar();
+  const { state } = useSidebar();
   const location = useLocation();
   const { user } = useAuth();
   const currentPath = location.pathname;
+  const collapsed = state === 'collapsed';
 
   const isActive = (path: string) => {
     if (path === '/') {
@@ -64,7 +65,7 @@ export function AppSidebar() {
   const showAdminSection = user?.role === 'Admin';
 
   return (
-    <Sidebar className={collapsed ? "w-14" : "w-64"} collapsible>
+    <Sidebar className={collapsed ? "w-14" : "w-64"} collapsible="icon">
       <SidebarContent className="bg-white border-r border-gray-200">
         {/* Logo Section */}
         <div className="p-4 border-b border-gray-200">

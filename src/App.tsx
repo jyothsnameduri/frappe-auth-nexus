@@ -35,6 +35,9 @@ const App = () => (
               <Route path="profile" element={<Profile />} />
               <Route path="users" element={<UserDirectory />} />
               <Route path="admin/users" element={<UserManagement />} />
+              <Route path="tickets" element={<TicketList />} />
+              <Route path="tickets/create" element={<CreateTicket />} />
+              <Route path="tickets/:ticketId" element={<TicketDetail />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
