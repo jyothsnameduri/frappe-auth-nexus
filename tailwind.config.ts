@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,16 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				frappe: {
+					primary: 'hsl(var(--frappe-primary))',
+					success: 'hsl(var(--frappe-success))',
+					warning: 'hsl(var(--frappe-warning))',
+					danger: 'hsl(var(--frappe-danger))',
+					info: 'hsl(var(--frappe-info))',
+					light: 'hsl(var(--frappe-light))',
+					dark: 'hsl(var(--frappe-dark))',
+					gray: 'hsl(var(--frappe-gray))'
 				}
 			},
 			borderRadius: {
@@ -84,11 +95,27 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'fade-in': {
+					from: { opacity: '0', transform: 'translateY(10px)' },
+					to: { opacity: '1', transform: 'translateY(0)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.3s ease-out'
+			},
+			fontFamily: {
+				'inter': ['Inter', 'sans-serif'],
+			},
+			spacing: {
+				'4': '1rem',
+				'8': '2rem',
+				'16': '4rem',
+				'24': '6rem',
+				'32': '8rem',
+				'48': '12rem'
 			}
 		}
 	},
