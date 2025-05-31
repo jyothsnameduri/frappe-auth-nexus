@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,6 +15,9 @@ import UserDirectory from "./pages/UserDirectory";
 import UserManagement from "./pages/UserManagement";
 import NotFound from "./pages/NotFound";
 import { TicketList, CreateTicket, TicketDetail } from "./pages/tickets";
+import KnowledgeBase from "./pages/KnowledgeBase";
+import AIInsights from "./pages/AIInsights";
+import Reports from "./pages/Reports";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +41,9 @@ const App = () => (
               <Route path="tickets" element={<TicketList />} />
               <Route path="tickets/create" element={<CreateTicket />} />
               <Route path="tickets/:ticketId" element={<TicketDetail />} />
+              <Route path="knowledge" element={<KnowledgeBase />} />
+              <Route path="ai-insights" element={<AIInsights />} />
+              <Route path="reports" element={<Reports />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
